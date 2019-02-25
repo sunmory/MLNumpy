@@ -1,12 +1,12 @@
 # ML algorithms implemented by Numpy
 
-Learn about ML since 2018.1
+Learn about ML from January 2018.
 
-These code are mainly written from 2018.1 to 2018.3, according to 《统计学习方法》
+These codes are mainly written from January 2018 to March 2018, according to 《统计学习方法》
 
-Recently, start to review the basics and rearrange the code to upload.
+Recently started to review the basics and rearrange the code to upload.
 
-The model include:
+The following models are included in this project:
 
 - SVM
 
