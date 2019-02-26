@@ -31,22 +31,22 @@ class SvmModel:
 
     def cal_E(self, i):
         """
-		计算Ei
-		Ei = g(xi) - yi
-		:param i: 出的待更新的乘子的索引
-		:return:
-		"""
+        计算Ei
+        Ei = g(xi) - yi
+        :param i: 出的待更新的乘子的索引
+        :return:
+        """
         K_i = self.K[:, i]  # 取出K(xj, xi)(j = 1 ~ n)
         fx = float(np.multiply(self.alphas, self.label).T * K_i + self.b)  # 计算g(xi)
         E = fx - self.label[i]  # 计算Ei
         return E
 
     def select_j(self, alphas_index1):
-        '''
-		选择更新幅度最大的参数为a2
-		参数：
-		alphas_index1为第一个参数的索引
-		'''
+        """
+        选择更新幅度最大的参数为a2
+        :param alphas_index1: 第一个参数的索引
+        :return:
+        """
         m = self.alphas.shape[0]
         max_distance = 0
         alphas_index2 = 0
@@ -61,14 +61,14 @@ class SvmModel:
         return (E_i, E_j, alphas_index2)
 
     def update_alphas(self, E_i, E_j, alphas_index1, alphas_index2):
-        '''
-		更新参数a与b
-		参数：
-		E_i为a1的E
-		E_j为a2的E
-		alphas_index1为第一个参数的索引
-		alphas_index2位第二个参数的索引
-		'''
+        """
+        更新参数a与b
+        :param E_i: a1的E
+        :param E_j: a2的E
+        :param alphas_index1: 第一个参数的索引
+        :param alphas_index2: 第二个参数的索引
+        :return:
+        """
         distance_value = float(E_i - E_j)
         eta = self.K[alphas_index1, alphas_index1] + self.K[alphas_index2, alphas_index2] - 2 * self.K[
             alphas_index1, alphas_index2]
@@ -98,7 +98,7 @@ class SvmModel:
 
     def alphas_range(self, alphas_index1, alphas_index2, alphas_new):
         """
-		计算a的范围，将计算得到的a的值限制在正确的范围内
+        计算a的范围，将计算得到的a的值限制在正确的范围内
         :param alphas_index1: a1的索引
         :param alphas_index2: a2的索引
         :param alphas_new: 计算得到的新的a2的值，送入函数中对范围进行限制
@@ -150,10 +150,6 @@ class SvmModel:
                     E_i, E_j, index2 = self.select_j(index)
                     alphas1_old = self.alphas[index].copy()  # 重点，非copy的变量传值实际为指针
                     self.alphas[index], self.alphas[index2], self.b = self.update_alphas(E_i, E_j, index, index2)
-                    # print '-----------------------------'
-                    # print self.alphas[index]
-                    # print alphas1_old
-                    # print (np.abs(self.alphas[index] - alphas1_old))
                     if (np.abs(self.alphas[index] - alphas1_old) > 0.000000001):
                         unfit_alphas_num = unfit_alphas_num + 1
 
@@ -162,10 +158,10 @@ class SvmModel:
 
     def predict(self, text):
         """
-		对输入样本进行预测分析
-		:param text: 输入的待预测的样本
-		:return: 正负类预测结果
-		"""
+        对输入样本进行预测分析
+        :param text: 输入的待预测的样本
+        :return: 正负类预测结果
+        """
 
         svindex = np.nonzero(self.alphas)[0]
         svs = self.training_data[svindex]
@@ -180,45 +176,45 @@ class SvmModel:
         return int(category)
 
 
-def img2vector(filename):
-    returnVect = np.zeros((1, 1024))
-    fr = open(filename)
+def img2vector(file_name):
+    return_vect = np.zeros((1, 1024))
+    fr = open(file_name)
     for i in range(32):
-        lineStr = fr.readline()
+        line_str = fr.readline()
         for j in range(32):
-            returnVect[0, 32 * i + j] = int(lineStr[j])
-    return returnVect
+            return_vect[0, 32 * i + j] = int(line_str[j])
+    return return_vect
 
 
-def loadImages(dirName):
+def load_images(dirName):
     from os import listdir
-    hwLabels = []
-    trainingFileList = listdir(dirName)  # load the training set
-    m = len(trainingFileList)
-    trainingMat = np.zeros((m, 1024))
+    labels = []
+    train_file_list = listdir(dirName)  # load the training set
+    m = len(train_file_list)
+    training_mat = np.zeros((m, 1024))
     for i in range(m):
-        fileNameStr = trainingFileList[i]
-        fileStr = fileNameStr.split('.')[0]  # take off .txt
-        classNumStr = int(fileStr.split('_')[0])
-        if classNumStr == 9:
-            hwLabels.append(-1)
+        file_name_str = train_file_list[i]
+        file_str = file_name_str.split('.')[0]  # take off .txt
+        class_num_str = int(file_str.split('_')[0])
+        if class_num_str == 9:
+            labels.append(-1)
         else:
-            hwLabels.append(1)
-        trainingMat[i, :] = img2vector('%s/%s' % (dirName, fileNameStr))
-    return np.mat(trainingMat), np.mat(hwLabels).T
+            labels.append(1)
+        training_mat[i, :] = img2vector('%s/%s' % (dirName, file_name_str))
+    return np.mat(training_mat), np.mat(labels).T
 
 
 def svm_test(C, max_iter, tole, kernal_parameter):
     """
     运行SVM算法
-	:param C: 惩罚因子，用于限制松弛变量的大小
-	:param max_iter: 最大迭代次数，指更新不符合KKT条件的拉格朗日乘子的最大次数
-	:param tole: 松弛变量，防止过拟合
-	:param kernal_parameter: 核函数因子，包括使用哪种核函数与相应的核函数参数（如：rbf-高斯核函数 高斯核参数为 22 ）
-	:return: None
-	"""
+    :param C: 惩罚因子，用于限制松弛变量的大小
+    :param max_iter: 最大迭代次数，指更新不符合KKT条件的拉格朗日乘子的最大次数
+    :param tole: 松弛变量，防止过拟合
+    :param kernal_parameter: 核函数因子，包括使用哪种核函数与相应的核函数参数（如：rbf-高斯核函数 高斯核参数为 22 ）
+    :return: None
+    """
 
-    training_data, label = loadImages("..\\Data\\digits\\trainingDigits")
+    training_data, label = load_images("..\\Data\\digits\\trainingDigits")
     svm = SvmModel(training_data, label, C, max_iter, tole, kernal_parameter)
     svm.smo()
     sample_num = training_data.shape[0]
@@ -229,7 +225,7 @@ def svm_test(C, max_iter, tole, kernal_parameter):
     accuracy_rate = float(correct_num) / float(sample_num)
     print('train error rate is %f' % (1 - accuracy_rate))
 
-    test_data, label = loadImages("..\\Data\\digits\\testDigits")
+    test_data, label = load_images("..\\Data\\digits\\testDigits")
     sample_num = test_data.shape[0]
     correct_num = 0
     for i in range(sample_num):
