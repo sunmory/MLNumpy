@@ -1,13 +1,9 @@
 # ML algorithms implemented by Numpy
 
-Learn about ML from January 2018.
+最开始学机器学习时根据西瓜书和统计学习方法写的一些简单的ML模型，只用到了numpy没有调包
 
-These codes are mainly written from January 2018 to March 2018, according to 《统计学习方法》
-
-Recently started to review the basics and rearrange the code to upload.
-
-The following models are included in this project:
+最近在系统地复习学过的东西，顺便整理一下发到github上
 
 - SVM
 
-- 
+- Network
