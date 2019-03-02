@@ -5,6 +5,15 @@ import numpy as np
 
 class SvmModel:
     def __init__(self, training_data, label, C, max_iter, tole, kernal_parameter):
+        """
+        模型初始化
+        :param training_data: 训练数据集特征
+        :param label: 训练数据标签
+        :param C: 惩罚因子
+        :param max_iter: 最大迭代更新alpha参数的次数
+        :param tole: 允许的误差值（停止条件）
+        :param kernal_parameter:元组——表示核函数的参数，如：("rbf", 10) 表示 (高斯核，delta参数为10)
+        """
         self.training_data = training_data
         self.label = label
         self.C = C
